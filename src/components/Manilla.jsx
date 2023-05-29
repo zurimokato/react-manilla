@@ -50,7 +50,7 @@ function Manilla() {
     }
 
     const calcularTotal = () => {
-        return manillas.reduce((total, producto) => total + producto.valor * producto.cantidad*conversion, 0);
+        return new Intl.NumberFormat().format(manillas.reduce((total, producto) => total + producto.valor * producto.cantidad * conversion, 0));
     }
 
     const cambiarCantidad = (e, item) => {
@@ -66,19 +66,37 @@ function Manilla() {
     const cambioMoneda = (value) => {
         console.log(value);
         setMoneda(value);
-        if(value==1){
+        if (value == 1) {
             setConversion(1);
 
-        }else if(value ==2){
+        } else if (value == 2) {
             setConversion(5000);
         }
 
     }
 
+    useEffect(() => {
 
+        const obtenerMateriales = async () => {
+            try {
+                const librosRef = collection(db, "libros");
+                const q = query(librosRef, orderBy("nombreLibro"));
+                onSnapshot(q, (query,) => {
+                    setListaLibros(query.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+                })
+
+                console.log(listaLibros)
+
+            } catch (error) {
+                console.log(error);
+
+            }
+        }
+        obtenerMateriales();
+    }, [])
 
     return (
-        <div className='container mt-5'>
+        <div className='container-fluid'>
             <h1 className='text-center'>Manillas S.A.</h1>
             <hr />
             <div className="row">
@@ -125,7 +143,7 @@ function Manilla() {
 
 
                 </div>
-                <div className="col-7">
+                <div className="col-8">
                     <h4 className="text-center">Carrito de Manillas</h4>
                     {
                         manillas.map(item => (
@@ -133,7 +151,7 @@ function Manilla() {
                             <div className="card mb-2" key={item.id}>
                                 <div className="card-body">
                                     <div className="row">
-                                        <div className="col">
+                                        <div className="col-1">
                                             {item.material == 'cuero' ? (
                                                 <>
                                                     <img src="https://http2.mlstatic.com/D_NQ_NP_626492-MCO51160975398_082022-O.jpg"
@@ -156,7 +174,7 @@ function Manilla() {
                                                 <p className="lead fw-normal mb-0">{item.material}</p>
                                             </div>
                                         </div>
-                                        <div className="col-md-2 d-flex justify-content-center">
+                                        <div className="col-md-1 d-flex justify-content-center">
                                             <div>
                                                 <p className="small text-muted mb-1 pb-1">Dije</p>
                                                 <p className="lead fw-normal mb-0"><i className="fas fa-circle me-2" style={{ color: '#fdd8d2' }}></i>{item.dije}</p>
@@ -168,7 +186,7 @@ function Manilla() {
                                                 <p className="lead fw-normal mb-0">{item.tipo}</p>
                                             </div>
                                         </div>
-                                        <div className="col-md-1 d-flex justify-content-center">
+                                        <div className="col-md-2 d-flex justify-content-center">
                                             <div>
                                                 <p className="small text-muted mb-1 pb-1">Cantidad</p>
                                                 <div className='input-group'>
@@ -177,16 +195,16 @@ function Manilla() {
 
                                             </div>
                                         </div>
-                                        <div className="col-md-1 d-flex justify-content-center">
+                                        <div className="col-md-2 d-flex justify-content-center">
                                             <div>
                                                 <p className="small text-muted mb-1 pb-1">Precio</p>
-                                                <p className="lead fw-normal mb-0">{item.valor*conversion}</p>
+                                                <p className="lead fw-normal mb-0">{new Intl.NumberFormat().format(item.valor * conversion)}</p>
                                             </div>
                                         </div>
-                                        <div className="col-md-1 d-flex justify-content-center">
+                                        <div className="col-md-2 d-flex justify-content-center">
                                             <div>
                                                 <p className="small text-muted mb-1 pb-1">Total</p>
-                                                <p className="lead fw-normal mb-0">{item.valor * item.cantidad*conversion}</p>
+                                                <p className="lead fw-normal mb-0">{new Intl.NumberFormat().format(item.valor * item.cantidad * conversion)}</p>
                                             </div>
                                         </div>
                                         <div className="col-md-1 d-flex justify-content-center">
