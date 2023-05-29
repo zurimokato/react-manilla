@@ -6,6 +6,9 @@ function Manilla() {
     const [material, setMaterial] = useState("");
     const [tipo, setTipo] = useState("");
     const [dije, setDije] = useState("");
+    const [materialOption, setMaterialOption] = useState([]);
+    const [dijeOption, setDijeOption] = useState([]);
+    const [tiposOption, setTiposOption] = useState([]);
     const [manillas, setManillas] = useState([]);
     const [conversion, setConversion] = useState(1);
     const [moneda, setMoneda] = useState(1);
@@ -79,13 +82,39 @@ function Manilla() {
 
         const obtenerMateriales = async () => {
             try {
-                const librosRef = collection(db, "libros");
-                const q = query(librosRef, orderBy("nombreLibro"));
-                onSnapshot(q, (query,) => {
-                    setListaLibros(query.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-                })
+                const materialRef = await getDocs(collection(db, "material"));
+                const data = materialRef.docs.map((doc) => doc.data().nombre);
+                setMaterialOption(data);
 
-                console.log(listaLibros)
+                console.log(materialOption)
+
+            } catch (error) {
+                console.log(error);
+
+            }
+        }
+
+        const obtenerDije = async () => {
+            try {
+                const dijeref = await getDocs(collection(db, "dijes"));
+                const data = dijeref.docs.map((doc) => doc.data().nombre);
+                setDijeOption(data);
+
+                console.log(materialOption)
+
+            } catch (error) {
+                console.log(error);
+
+            }
+        }
+
+        const obtenerTipo = async () => {
+            try {
+                const tiposRef = await getDocs(collection(db, "tipos"));
+                const data = tiposRef.docs.map((doc) => doc.data().nombre);
+                setTiposOption(data);
+
+                console.log(materialOption)
 
             } catch (error) {
                 console.log(error);
@@ -93,6 +122,9 @@ function Manilla() {
             }
         }
         obtenerMateriales();
+        obtenerTipo();
+        obtenerDije();
+
     }, [])
 
     return (
@@ -108,25 +140,37 @@ function Manilla() {
                                 <p className="small text-muted mb-1 pb-1">Material</p>
                                 <select name="select-material" id="material" className="form-select" value={material} onChange={(e) => setMaterial(e.target.value)}>
                                     <option value="">Seleccione un material</option>
-                                    <option value="cuero">Cuero</option>
-                                    <option value="cuerda">Cuerda</option>
+                                    {
+                                        materialOption.map(item => (
+                                            <option key={item} value={item}>{item}</option>
+                                        ))
+
+                                    }
+
                                 </select>
                             </div>
                             <div className="col-3">
                                 <p className="small text-muted mb-1 pb-1">Dije</p>
                                 <select name="select-dije" id="dije" className="form-select" value={dije} onChange={(e) => setDije(e.target.value)}>
                                     <option value="">Seleccione un dije</option>
-                                    <option value="martillo">Martillo</option>
-                                    <option value="ancla">Ancla</option>
+                                    {
+                                        dijeOption.map(item => (
+                                            <option key={item} value={item}>{item}</option>
+                                        ))
+
+                                    }
                                 </select>
                             </div>
                             <div className="col-6">
                                 <p className="small text-muted mb-1 pb-1">Tipo</p>
                                 <select name="select-tipo" id="tipo" className="form-select" value={tipo} onChange={(e) => setTipo(e.target.value)}>
                                     <option value="">Seleccione un tipo</option>
-                                    <option value="oro, oro rosado" >Oro, Oro rosado</option>
-                                    <option value="plata">Plata</option>
-                                    <option value="niquel">Niquel</option>
+                                    {
+                                        tiposOption.map(item => (
+                                            <option key={item} value={item}>{item}</option>
+                                        ))
+
+                                    }
                                 </select>
                             </div>
 
@@ -208,7 +252,7 @@ function Manilla() {
                                             </div>
                                         </div>
                                         <div className="col-md-1 d-flex justify-content-center">
-                                            <div className=' justify-content-center'>
+                                            <div className='d-flex align-items-center'>
                                                 <button type="button" className="btn btn-outline-danger" onClick={() => eliminarDelCarrito(item.id)}>
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-trash3" viewBox="0 0 16 16">
                                                         <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5ZM11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H2.506a.58.58 0 0 0-.01 0H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1h-.995a.59.59 0 0 0-.01 0H11Zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5h9.916Zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47ZM8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5Z" />
